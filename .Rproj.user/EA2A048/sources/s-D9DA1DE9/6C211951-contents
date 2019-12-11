@@ -1,0 +1,221 @@
+---
+title: "Project2"
+output: 
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+**Sahar Jiwani, sj26895**
+
+**The researchers of this dataset were testing the IQ levels of post-comatose patients. The first variable, id, is patient's ID number. The second variable, days, is the number of days after awaking from the coma that IQ was measured. The third variable, duration, is how many days the coma lasted. The fourth variable, sex, identifies if the patient is male or female. The fifth variable, age, is age at the time of injury. The sixth variable, piq, is performance IQ score while the seventh variable, viq, is the verbal IQ score.** 
+
+##Task 1: MANOVA
+```{r}
+Wong<-read.csv("Wong.csv")
+library(dplyr)
+library(ggplot2)
+coma <- Wong
+man1<-manova(cbind(age,duration, days, piq, viq)~sex, data=coma)
+summary(man1)
+#Type I error 
+1-(.95)^6
+#Bonferroni
+.05/6
+```
+**The result of the MANOVA was not significant (p-value=0.1645) This means that for each response variable (age, duration, days, piq, viq), the means of the groups of the categorical variable (sex) are equal. If the MANOVA was significant, I would have performed 5 ANOVAs, one for each numeric variable, but no post-hoc tests because the response variable only has two levels. Including the MANOVA, this is 6 total tests. The probability of a Type I error 26.49% The value of Bonferroni's correction is 0.0083333. There are many MANOVA assumptions. The ones that are likely to be met are independent sample and random observation and no extreme outliers. The rest of the assumptions are probably not met. No multicollinearity, for example, may not be likely as those who score highly on piq probably also score highly on viq. Multivariate normality is very hard to show and chances are this data set fails to meet this assumption claiming the residuals are normally distributed. The final assumption is that there is homogeneity of within-group covariance matrices, which is likely also not met.**  
+
+
+## Task 2: Randomization Test
+```{r} 
+#Two-sample t-test 
+t.test(data=coma,piq~sex)
+t.test(data=coma, viq~sex)
+t<-vector() 
+for(i in 1:10000){
+ samp<-rnorm(25,mean=5) 
+ t[i] <- (mean(samp)-5)/(sd(samp)/sqrt(25)) 
+}
+data.frame(t)%>%
+ggplot(aes(t))+geom_histogram(aes(y=..density..), bins=30)+
+ stat_function(fun=dt,args=list(df=24),geom="line")
+
+```
+
+**I wanted to test if the means across the IQ test scores were significantly different from the means of the levels of the sex variable. The null hypothesis for both tests is that there is no difference in the means between the IQ test scores and sex. The alternative hypothesis is that there is a difference in the means between the two variables. My first t-test, which looked at sex and viq, had a p-value of 0.6829. This means there is no significant difference in the means of the viq across the means of the two sexes. Therefore, males and females scored the same, on average, on the viq. The same is true for the second t-test in which I tested sex and piq. The p-value for this test was 0.3725, which is not significant. This means males and females scored the same, on average, on the piq.**
+
+##Task 3: Linear Regression
+ 
+```{R}
+library(lmtest)
+library(sandwich)
+#piq, age, sex regression and plot
+coma$piq_c<-coma$piq-mean(coma$piq)
+coma$age_c<-coma$age-mean(coma$age)
+fit<-lm(piq_c~ age_c * sex, data=coma); summary(fit)
+ggplot(coma, aes(x=age, y=piq,group=sex))+geom_point(aes(color=sex))+
+ geom_smooth(method="lm",formula=y~1,se=F,fullrange=T,aes(color=sex))+
+theme(legend.position=c(.9,.19))+xlab("Age")
+#linearity, homoskedasticity 
+resids<-fit$residuals
+fitvals<-fit$fitted.values
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, color='red')
+#normality 
+ggplot()+geom_histogram(aes(resids), bins=20)
+#robust SE
+coeftest(fit, vcov=vcovHC(fit))[,1:2]
+#proportion of variation explained by model
+summary(fit)$r.sq
+```
+
+**The intercept explains the likely piq value when age and sex are 0. Since it is impossible for sex and to equal 0, this number does not provide any meaningful information. Age_c tells us if we were to hold sex constant, every 1 year increase in age would increase piq scores by .0822 points. SexMale tells us that controlling for age, being a male will decrease the piq score by 2.17 points compared to females. The interaction explains if the effect of sex on piq score differs by age. The graphs for linearity, normality, and homoskedasticity all look normal meaning all assumptions are met. When recomputing the regression with robust standard error via the coeftest function, all the standard errors increased compared to the regualar regression. The proportion of the variation explained by my model is 0.007820345.**
+
+##Task 4: Boostrapping
+```{r}
+fit<-lm(piq_c~ age_c * sex, data=coma); summary(fit)
+#boostrap residuals 
+ resids<-fit$residuals 
+ fitted<-fit$fitted.values 
+ resid_resamp<-replicate(5000,{
+ new_resids<-sample(resids,replace=TRUE) 
+ coma$new_y<-fitted+new_resids 
+ fit1<-lm(new_y~age_c+sex,data=coma) 
+ coef(fit1) 
+})
+ resid_resamp%>%t%>%as.data.frame%>%summarize_all(sd)
+```
+
+**The new bootstrapped standard error for age decreased substantially from both the orginal value and the robust SE value. The orginal SE was 0.148088, the robust standard error increased to 0.1963573, and the boostrapped standard error is only 0.060064.
+The boostrapped standard error for sexMale was also less than the other standard errors. The original was 2.032842, the robust SE increased to 2.3540817 and the bootstrapped value is 2.00616** 
+
+
+##Task 5: Logistic Regression 
+```{r}
+#regression
+fit2<-glm(sex~age+duration+piq, family="binomial", data=coma)
+coeftest(fit2)
+exp(coef(fit2))
+
+#confusion matrix
+class_diag<-function(probs,truth){
+  
+  tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+
+  if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE) truth<-as.numeric(truth)-1
+  
+
+  ord<-order(probs, decreasing=TRUE)
+  probs <- probs[ord]; truth <- truth[ord]
+  
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  
+  dup<-c(probs[-1]>=probs[-length(probs)], FALSE)
+  TPR<-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+  
+  n <- length(TPR)
+  auc<- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+
+  data.frame(acc,sens,spec,ppv,auc)
+}
+prob<- predict(fit2, type = "response")
+class_diag(prob, coma$sex)
+table(predict = as.numeric(prob>0.5), truth = coma$sex)%>%addmargins
+
+#ROC  
+library(plotROC)
+ROCplot<-ggplot(coma)+geom_roc(aes(d=sex,m=prob), n.cuts=0) 
+ROCplot
+
+#AUC, Accuracy, TPR...
+prob <- predict(fit2, type = "response")
+class_diag <- function(probs, truth) {
+tab <- table(factor(probs > 0.5, levels = c("FALSE", "TRUE")),
+truth)
+acc = sum(diag(tab))/sum(tab)
+sens = tab[2, 2]/colSums(tab)[2]
+spec = tab[1, 1]/colSums(tab)[1]
+ppv = tab[2, 2]/rowSums(tab)[2]
+if (is.numeric(truth) == FALSE & is.logical(truth) == FALSE)
+truth <- as.numeric(truth) - 1
+ord <- order(probs, decreasing = TRUE)
+probs <- probs[ord]
+truth <- truth[ord]
+TPR = cumsum(truth)/max(1, sum(truth))
+FPR = cumsum(!truth)/max(1, sum(!truth))
+dup <- c(probs[-1] >= probs[-length(probs)], FALSE)
+TPR <- c(0, TPR[!dup], 1)
+1
+FPR <- c(0, FPR[!dup], 1)
+n <- length(TPR)
+auc <- sum(((TPR[-1] + TPR[-n])/2) * (FPR[-1] - FPR[-n]))
+data.frame(acc, sens, spec, ppv, auc)
+}
+class_diag(prob,coma$sex)
+
+#5-fold CV
+set.seed(1234) 
+k = 5
+data1 <- coma[sample(nrow(coma)), ]
+folds <- cut(seq(1:nrow(coma)), breaks = k, labels = F) 
+diags <- NULL
+for (i in 1:k) {
+ train <- data1[folds != i, ]
+ test <- data1[folds == i, ]
+ truth <- test$sex
+ fit4 <- glm(sex ~ piq+ viq , data = coma, family = "binomial") 
+ probs <- predict(fit4, newdata = test, type = "response") 
+ preds <- ifelse(probs > 0.5, 1, 0)
+ diags <- rbind(diags, class_diag(probs, truth)) 
+}
+diags %>% summarize_all(mean)
+
+#density plot
+odds<-function(p)p/(1-p)
+p<-seq(0,1,by=.1)
+logit<-function(p)log(odds(p))
+cbind(p, odds=odds(p),logit=logit(p))%>%round(4)
+coma$logit<-predict(fit2) 
+coma$outcome<-factor(coma$sex,levels=c("Female","Male"))
+ggplot(coma,aes(logit, fill=as.factor(sex)))+geom_density(alpha=.3)+
+ geom_vline(xintercept=0,lty=2)
+
+```
+
+**It is difficult to interpret these coefficients because it is unlikely that factors like age, duration, and piq can accurately predict if the patient is male or female. After exponentiation of coefficients, according to this regression, the coefficient estimate for age tells us that for every 1 year increase in age, the odds of being a female multiply by 1.01. For every 1 day increase in duration, odds of being a woman multiplies by 1.018, meaning females probably had longer durations than men by 1.018 days. For every 1 point increase in piq, the odds of being a female multiplies by 0.99, which means females had higher piq scores than males. Accuracy is 0.7854985, which is the porportion of correctly classified cases. Sensitivity is 1, meaning the true positive rate was 100% The confusion matrix did not predict "0" for anyone, meaning predicted probabilities were above 0.5. Specificity is 0, which is the true negative rate. PPV is 0.78549, which is the positive predicted value. AUC is 0.6048212, which is why the ROC graph is not a perfect curve.** 
+
+##Task 6: LASSO
+```{r}
+library(glmnet)
+library(dplyr)
+data(coma)
+y<-as.matrix(coma$piq)
+x<-coma%>%dplyr::select(viq,duration,age, days)%>%mutate_all(scale)%>%as.matrix
+cv<-cv.glmnet(x,y) 
+lasso1<-glmnet(x,y,lambda=cv$lambda.1se)
+coef(lasso1)
+
+#CV
+set.seed(1234)
+k=10
+data2<-coma[sample(nrow(coma)),] 
+folds<-cut(seq(1:nrow(coma)),breaks=k,labels=F)
+diags<-NULL
+for(i in 1:k){
+ train<-data2[folds!=i,]
+ test<-data2[folds==i,]
+ fit5<-lm(piq~viq+duration,data=train)
+ yhat<-predict(fit,newdata=test)
+ diags<-mean((test$piq-yhat)^2)
+}
+mean(diags)
+summary(fit5)
+```
+**The variables retained after conducting the lasso regression is viq and duration. For the regression, I did not include categorial variables or variables that did not make sense to include such as the mean centered variables in the dataset. The residual standard error was 11.42, which is much smaller than the standard error from the 5-fold CV, which was 7253.34.**
+

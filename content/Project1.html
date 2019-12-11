@@ -1,0 +1,469 @@
+---
+title: "Exploratory Data Project"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+<p>Both of my datasets involved New York City. My first dataset is about AirBNB data for New York City. This dataset, after I removed some extraneous variables, includes price, minimum nights, availability out of the year, and number of reviews, amongst other things. The second dataset involved New York City real estate data. This set includes tax class at time of sale, sale price, square footage, and zipcode, amongst others. I chose data sets about New York City becuase I am originally from there, and was interested to explore some data about my hometown. I found both of these data sets from the Kaggle database. I expected some associations between price points and some of the variables. For example, I expected AirBNBs in Manhattan to be the most expensive, for price to increase with squre footage, and the number of reviews to negatively correlate with availability.</p>
+<p>##Task 1: Tidying and Joining</p>
+<pre class="r"><code>#data(package = .packages(all.available = TRUE))
+library(ggplot2)
+library(tidyr)
+library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ────────────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ tibble  2.1.3     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.4.0
+## ✓ purrr   0.3.3</code></pre>
+<pre><code>## ── Conflicts ───────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>nyc_rolling_sales&lt;-read.csv(&quot;nyc-rolling-sales.csv&quot;)
+AB_NYC_2019&lt;-read.csv(&quot;AB_NYC_2019.csv&quot;)
+new&lt;-nyc_rolling_sales%&gt;% pivot_wider(names_from = &quot;BOROUGH&quot;, values_from = &quot;NEIGHBORHOOD&quot;)
+nyc_sales&lt;-new%&gt;%pivot_longer(c(21:25), names_to = &quot;borough&quot;, values_to = &quot;neighborhood&quot;, values_drop_na = TRUE)
+wide&lt;-AB_NYC_2019%&gt;%pivot_wider(names_from = &quot;neighbourhood&quot;, values_from = &quot;neighbourhood_group&quot;)
+BNB&lt;-wide%&gt;%pivot_longer(-c(1:15),names_to = &quot;neighborhood&quot;, values_to = &quot;neighborhood_group&quot;, values_drop_na = TRUE)
+
+nyc_sales&lt;-nyc_sales%&gt;%mutate(neighborhood=gsub(&quot;-&quot;,&quot;&quot;,neighborhood),
+                              neighborhood=gsub(&quot; &quot;,&quot;&quot;,neighborhood),
+                              neighborhood=gsub(&quot;&#39;&quot;,&quot;&quot;,neighborhood),
+                              neighborhood=tolower(neighborhood))
+
+BNB&lt;-BNB%&gt;%mutate(neighborhood=gsub(&quot;-&quot;,&quot;&quot;,neighborhood),
+                              neighborhood=gsub(&quot; &quot;,&quot;&quot;,neighborhood),
+                              neighborhood=gsub(&quot;&#39;&quot;,&quot;&quot;,neighborhood),
+                              neighborhood=tolower(neighborhood))
+
+nyc_nbh&lt;-nyc_sales%&gt;%mutate(GROSS.SQUARE.FEET=as.numeric(as.character(GROSS.SQUARE.FEET)),LAND.SQUARE.FEET=as.numeric(as.character(LAND.SQUARE.FEET)))%&gt;%select(-c(1:10))%&gt;%group_by(neighborhood)%&gt;%summarize_if(is.numeric,mean,na.rm=T)</code></pre>
+<pre><code>## Warning: NAs introduced by coercion
+
+## Warning: NAs introduced by coercion</code></pre>
+<pre class="r"><code>BNB_nbh &lt;- BNB%&gt;%select(-c(1:7,11,15),neighborhood)%&gt;%group_by(neighborhood) 
+
+comb&lt;- nyc_nbh %&gt;% inner_join(BNB_nbh, by= &quot;neighborhood&quot;)
+
+glimpse(comb)</code></pre>
+<pre><code>## Observations: 26,206
+## Variables: 15
+## $ neighborhood                   &lt;chr&gt; &quot;ardenheights&quot;, &quot;ardenheights&quot;, &quot;arden…
+## $ RESIDENTIAL.UNITS              &lt;dbl&gt; 1.122302, 1.122302, 1.122302, 1.122302…
+## $ COMMERCIAL.UNITS               &lt;dbl&gt; 0.003597122, 0.003597122, 0.003597122,…
+## $ TOTAL.UNITS                    &lt;dbl&gt; 1.125899, 1.125899, 1.125899, 1.125899…
+## $ LAND.SQUARE.FEET               &lt;dbl&gt; 2151.537, 2151.537, 2151.537, 2151.537…
+## $ GROSS.SQUARE.FEET              &lt;dbl&gt; 1566.685, 1566.685, 1566.685, 1566.685…
+## $ YEAR.BUILT                     &lt;dbl&gt; 1959.119, 1959.119, 1959.119, 1959.119…
+## $ TAX.CLASS.AT.TIME.OF.SALE      &lt;dbl&gt; 1.010791, 1.010791, 1.010791, 1.010791…
+## $ price                          &lt;int&gt; 75, 41, 83, 70, 250, 50, 125, 625, 34,…
+## $ minimum_nights                 &lt;int&gt; 1, 2, 30, 5, 2, 7, 2, 4, 4, 1, 1, 1, 4…
+## $ number_of_reviews              &lt;int&gt; 20, 7, 3, 1, 21, 0, 8, 1, 39, 12, 25, …
+## $ reviews_per_month              &lt;dbl&gt; 1.55, 0.71, 0.90, 1.00, 0.26, NA, 0.09…
+## $ calculated_host_listings_count &lt;int&gt; 1, 1, 1, 1, 4, 4, 4, 4, 8, 1, 3, 3, 8,…
+## $ availability_365               &lt;int&gt; 6, 0, 316, 55, 333, 189, 353, 335, 347…
+## $ neighborhood_group             &lt;fct&gt; Staten Island, Staten Island, Staten I…</code></pre>
+<p>Both of my datasets were tidy so in order to make them unitidy, I employed the pivot_wider function. This led to individual variables having their own column, which is not tidy. To re-tidy, I used pivot_longer.
+When it came time to join both sets, I chose to use inner join because there are so many neighborhoods in New York City, the data would have become too massive and would not have added any value to the analysis. By selecting only for the neighborhoods both sets have in common, the data becomes managable and trends become easier to spot.</p>
+<p>##Task 2: Wrangling</p>
+<pre class="r"><code>comb%&gt;%filter(neighborhood==&quot;chelsea&quot;)</code></pre>
+<pre><code>## # A tibble: 1,113 x 15
+##    neighborhood RESIDENTIAL.UNI… COMMERCIAL.UNITS TOTAL.UNITS LAND.SQUARE.FEET
+##    &lt;chr&gt;                   &lt;dbl&gt;            &lt;dbl&gt;       &lt;dbl&gt;            &lt;dbl&gt;
+##  1 chelsea                  1.84            0.179        2.04            4092.
+##  2 chelsea                  1.84            0.179        2.04            4092.
+##  3 chelsea                  1.84            0.179        2.04            4092.
+##  4 chelsea                  1.84            0.179        2.04            4092.
+##  5 chelsea                  1.84            0.179        2.04            4092.
+##  6 chelsea                  1.84            0.179        2.04            4092.
+##  7 chelsea                  1.84            0.179        2.04            4092.
+##  8 chelsea                  1.84            0.179        2.04            4092.
+##  9 chelsea                  1.84            0.179        2.04            4092.
+## 10 chelsea                  1.84            0.179        2.04            4092.
+## # … with 1,103 more rows, and 10 more variables: GROSS.SQUARE.FEET &lt;dbl&gt;,
+## #   YEAR.BUILT &lt;dbl&gt;, TAX.CLASS.AT.TIME.OF.SALE &lt;dbl&gt;, price &lt;int&gt;,
+## #   minimum_nights &lt;int&gt;, number_of_reviews &lt;int&gt;, reviews_per_month &lt;dbl&gt;,
+## #   calculated_host_listings_count &lt;int&gt;, availability_365 &lt;int&gt;,
+## #   neighborhood_group &lt;fct&gt;</code></pre>
+<pre class="r"><code>comb%&gt;%slice(1:5)</code></pre>
+<pre><code>## # A tibble: 5 x 15
+##   neighborhood RESIDENTIAL.UNI… COMMERCIAL.UNITS TOTAL.UNITS LAND.SQUARE.FEET
+##   &lt;chr&gt;                   &lt;dbl&gt;            &lt;dbl&gt;       &lt;dbl&gt;            &lt;dbl&gt;
+## 1 ardenheights             1.12          0.00360        1.13            2152.
+## 2 ardenheights             1.12          0.00360        1.13            2152.
+## 3 ardenheights             1.12          0.00360        1.13            2152.
+## 4 ardenheights             1.12          0.00360        1.13            2152.
+## 5 arrochar                 1.33          0.111          1.44            4216.
+## # … with 10 more variables: GROSS.SQUARE.FEET &lt;dbl&gt;, YEAR.BUILT &lt;dbl&gt;,
+## #   TAX.CLASS.AT.TIME.OF.SALE &lt;dbl&gt;, price &lt;int&gt;, minimum_nights &lt;int&gt;,
+## #   number_of_reviews &lt;int&gt;, reviews_per_month &lt;dbl&gt;,
+## #   calculated_host_listings_count &lt;int&gt;, availability_365 &lt;int&gt;,
+## #   neighborhood_group &lt;fct&gt;</code></pre>
+<pre class="r"><code>comb%&gt;%arrange(price)</code></pre>
+<pre><code>## # A tibble: 26,206 x 15
+##    neighborhood RESIDENTIAL.UNI… COMMERCIAL.UNITS TOTAL.UNITS LAND.SQUARE.FEET
+##    &lt;chr&gt;                   &lt;dbl&gt;            &lt;dbl&gt;       &lt;dbl&gt;            &lt;dbl&gt;
+##  1 bedfordstuy…            2.63             0.124        2.78            1705.
+##  2 bedfordstuy…            2.63             0.124        2.78            1705.
+##  3 bedfordstuy…            2.63             0.124        2.78            1705.
+##  4 bedfordstuy…            2.63             0.124        2.78            1705.
+##  5 bushwick                2.76             0.176        2.94            2123.
+##  6 bushwick                2.76             0.176        2.94            2123.
+##  7 bushwick                2.76             0.176        2.94            2123.
+##  8 greenpoint              1.94             0.160        2.20            1966.
+##  9 murrayhill              0.947            0.106        1.08            3052.
+## 10 bedfordstuy…            2.63             0.124        2.78            1705.
+## # … with 26,196 more rows, and 10 more variables: GROSS.SQUARE.FEET &lt;dbl&gt;,
+## #   YEAR.BUILT &lt;dbl&gt;, TAX.CLASS.AT.TIME.OF.SALE &lt;dbl&gt;, price &lt;int&gt;,
+## #   minimum_nights &lt;int&gt;, number_of_reviews &lt;int&gt;, reviews_per_month &lt;dbl&gt;,
+## #   calculated_host_listings_count &lt;int&gt;, availability_365 &lt;int&gt;,
+## #   neighborhood_group &lt;fct&gt;</code></pre>
+<pre class="r"><code>comb%&gt;% arrange(desc(price))</code></pre>
+<pre><code>## # A tibble: 26,206 x 15
+##    neighborhood RESIDENTIAL.UNI… COMMERCIAL.UNITS TOTAL.UNITS LAND.SQUARE.FEET
+##    &lt;chr&gt;                   &lt;dbl&gt;            &lt;dbl&gt;       &lt;dbl&gt;            &lt;dbl&gt;
+##  1 astoria                 2.88            0.174        3.15             2972.
+##  2 greenpoint              1.94            0.160        2.20             1966.
+##  3 lowereastsi…            1.59            0.298        1.93             2705.
+##  4 lowereastsi…            1.59            0.298        1.93             2705.
+##  5 tribeca                 0.896           0.0397       0.985           24703.
+##  6 clintonhill             2.98            0.0718       3.07             1285.
+##  7 chelsea                 1.84            0.179        2.04             4092.
+##  8 clintonhill             2.98            0.0718       3.07             1285.
+##  9 tribeca                 0.896           0.0397       0.985           24703.
+## 10 littleitaly             1.95            0.439        2.44             2643.
+## # … with 26,196 more rows, and 10 more variables: GROSS.SQUARE.FEET &lt;dbl&gt;,
+## #   YEAR.BUILT &lt;dbl&gt;, TAX.CLASS.AT.TIME.OF.SALE &lt;dbl&gt;, price &lt;int&gt;,
+## #   minimum_nights &lt;int&gt;, number_of_reviews &lt;int&gt;, reviews_per_month &lt;dbl&gt;,
+## #   calculated_host_listings_count &lt;int&gt;, availability_365 &lt;int&gt;,
+## #   neighborhood_group &lt;fct&gt;</code></pre>
+<pre class="r"><code>comb%&gt;%select(neighborhood,neighborhood_group) %&gt;% distinct() %&gt;% arrange(neighborhood_group)</code></pre>
+<pre><code>## # A tibble: 143 x 2
+##    neighborhood neighborhood_group
+##    &lt;chr&gt;        &lt;fct&gt;             
+##  1 baychester   Bronx             
+##  2 belmont      Bronx             
+##  3 bronxdale    Bronx             
+##  4 cityisland   Bronx             
+##  5 coopcity     Bronx             
+##  6 fieldston    Bronx             
+##  7 fordham      Bronx             
+##  8 huntspoint   Bronx             
+##  9 parkchester  Bronx             
+## 10 pelhambay    Bronx             
+## # … with 133 more rows</code></pre>
+<pre class="r"><code>comb%&gt;% select(GROSS.SQUARE.FEET, price)</code></pre>
+<pre><code>## # A tibble: 26,206 x 2
+##    GROSS.SQUARE.FEET price
+##                &lt;dbl&gt; &lt;int&gt;
+##  1             1567.    75
+##  2             1567.    41
+##  3             1567.    83
+##  4             1567.    70
+##  5             2249.   250
+##  6             2249.    50
+##  7             2249.   125
+##  8             2249.   625
+##  9             2249.    34
+## 10             2249.   105
+## # … with 26,196 more rows</code></pre>
+<pre class="r"><code>comb%&gt;%mutate(ResUnits_avg=RESIDENTIAL.UNITS/TOTAL.UNITS)</code></pre>
+<pre><code>## # A tibble: 26,206 x 16
+##    neighborhood RESIDENTIAL.UNI… COMMERCIAL.UNITS TOTAL.UNITS LAND.SQUARE.FEET
+##    &lt;chr&gt;                   &lt;dbl&gt;            &lt;dbl&gt;       &lt;dbl&gt;            &lt;dbl&gt;
+##  1 ardenheights             1.12          0.00360        1.13            2152.
+##  2 ardenheights             1.12          0.00360        1.13            2152.
+##  3 ardenheights             1.12          0.00360        1.13            2152.
+##  4 ardenheights             1.12          0.00360        1.13            2152.
+##  5 arrochar                 1.33          0.111          1.44            4216.
+##  6 arrochar                 1.33          0.111          1.44            4216.
+##  7 arrochar                 1.33          0.111          1.44            4216.
+##  8 arrochar                 1.33          0.111          1.44            4216.
+##  9 arrochar                 1.33          0.111          1.44            4216.
+## 10 arrochar                 1.33          0.111          1.44            4216.
+## # … with 26,196 more rows, and 11 more variables: GROSS.SQUARE.FEET &lt;dbl&gt;,
+## #   YEAR.BUILT &lt;dbl&gt;, TAX.CLASS.AT.TIME.OF.SALE &lt;dbl&gt;, price &lt;int&gt;,
+## #   minimum_nights &lt;int&gt;, number_of_reviews &lt;int&gt;, reviews_per_month &lt;dbl&gt;,
+## #   calculated_host_listings_count &lt;int&gt;, availability_365 &lt;int&gt;,
+## #   neighborhood_group &lt;fct&gt;, ResUnits_avg &lt;dbl&gt;</code></pre>
+<pre class="r"><code>comb%&gt;%group_by(neighborhood_group) %&gt;% summarize(meanp=mean(price,na.rm = T))</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   neighborhood_group meanp
+##   &lt;fct&gt;              &lt;dbl&gt;
+## 1 Bronx               92.2
+## 2 Brooklyn           121. 
+## 3 Manhattan          206. 
+## 4 Queens              99.8
+## 5 Staten Island       98.6</code></pre>
+<pre class="r"><code>comb%&gt;%group_by(neighborhood_group)%&gt;% summarize (meanfoot=mean(GROSS.SQUARE.FEET, na.rm = T))</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   neighborhood_group meanfoot
+##   &lt;fct&gt;                 &lt;dbl&gt;
+## 1 Bronx                 4586.
+## 2 Brooklyn              2717.
+## 3 Manhattan            31356.
+## 4 Queens                5095.
+## 5 Staten Island         2214.</code></pre>
+<pre class="r"><code>comb%&gt;%group_by(neighborhood_group)%&gt;% summarize (meanfoot1=mean(LAND.SQUARE.FEET, na.rm = T))</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   neighborhood_group meanfoot1
+##   &lt;fct&gt;                  &lt;dbl&gt;
+## 1 Bronx                 19044.
+## 2 Brooklyn               1866.
+## 3 Manhattan              4925.
+## 4 Queens                 4045.
+## 5 Staten Island          5982.</code></pre>
+<pre class="r"><code>comb%&gt;%group_by(neighborhood_group)%&gt;% summarize (res=mean(RESIDENTIAL.UNITS, na.rm = T))</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   neighborhood_group   res
+##   &lt;fct&gt;              &lt;dbl&gt;
+## 1 Bronx               3.11
+## 2 Brooklyn            2.68
+## 3 Manhattan           2.45
+## 4 Queens              2.04
+## 5 Staten Island       1.29</code></pre>
+<pre class="r"><code>comb%&gt;% group_by(neighborhood_group) %&gt;% summarize(meanavail=mean(availability_365, na.rm = T))</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   neighborhood_group meanavail
+##   &lt;fct&gt;                  &lt;dbl&gt;
+## 1 Bronx                  170. 
+## 2 Brooklyn               106. 
+## 3 Manhattan               98.7
+## 4 Queens                 144. 
+## 5 Staten Island          194.</code></pre>
+<pre class="r"><code>comb%&gt;% filter(neighborhood_group==&quot;Staten Island&quot;)%&gt;%group_by(neighborhood)%&gt;% summarize(meanavail=mean(availability_365, na.rm = T)) %&gt;% arrange(desc(meanavail))</code></pre>
+<pre><code>## # A tibble: 33 x 2
+##    neighborhood  meanavail
+##    &lt;chr&gt;             &lt;dbl&gt;
+##  1 willowbrook        351 
+##  2 richmondtown       300 
+##  3 tottenville        268.
+##  4 arrochar           256.
+##  5 concord            256.
+##  6 grantcity          240.
+##  7 midlandbeach       236 
+##  8 stapleton          216.
+##  9 tompkinsville      209.
+## 10 huguenot           208 
+## # … with 23 more rows</code></pre>
+<pre class="r"><code>comb%&gt;% filter(neighborhood_group==&quot;Manhattan&quot;)%&gt;%group_by(neighborhood)%&gt;% summarize(meanavail=mean(availability_365, na.rm = T)) %&gt;% arrange((meanavail))</code></pre>
+<pre><code>## # A tibble: 14 x 2
+##    neighborhood       meanavail
+##    &lt;chr&gt;                  &lt;dbl&gt;
+##  1 morningsideheights      43.1
+##  2 civiccenter             68.3
+##  3 rooseveltisland         72.6
+##  4 eastvillage             74.6
+##  5 chinatown               90.8
+##  6 gramercy                94.5
+##  7 lowereastside           97.2
+##  8 inwood                  98.5
+##  9 littleitaly            100. 
+## 10 soho                   110. 
+## 11 chelsea                114. 
+## 12 kipsbay                122. 
+## 13 tribeca                127. 
+## 14 murrayhill             173.</code></pre>
+<pre class="r"><code>comb%&gt;%group_by(neighborhood_group)%&gt;% summarize(meanyr=mean(YEAR.BUILT, na.rm = T))</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   neighborhood_group meanyr
+##   &lt;fct&gt;               &lt;dbl&gt;
+## 1 Bronx               1687.
+## 2 Brooklyn            1747.
+## 3 Manhattan           1667.
+## 4 Queens              1841.
+## 5 Staten Island       1825.</code></pre>
+<pre class="r"><code>comb%&gt;%group_by(neighborhood_group)%&gt;% summarize(minyr=min(YEAR.BUILT, na.rm = T))</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   neighborhood_group minyr
+##   &lt;fct&gt;              &lt;dbl&gt;
+## 1 Bronx               494.
+## 2 Brooklyn           1492.
+## 3 Manhattan          1378.
+## 4 Queens             1608.
+## 5 Staten Island      1573.</code></pre>
+<pre class="r"><code>comb %&gt;% group_by(price) %&gt;% na.omit() %&gt;%
+ summarize(meanavail=mean(availability_365), meanfoot=mean(GROSS.SQUARE.FEET), review=mean(reviews_per_month)) %&gt;% cor()</code></pre>
+<pre><code>##                price  meanavail   meanfoot      review
+## price      1.0000000 0.16733828  0.2238696 -0.17777759
+## meanavail  0.1673383 1.00000000  0.1047160  0.03393741
+## meanfoot   0.2238696 0.10471603  1.0000000 -0.12425454
+## review    -0.1777776 0.03393741 -0.1242545  1.00000000</code></pre>
+<p>When arranging each neighborhood by price, Astoria was the most expensive and Bedford Stuyvesant was least expensive. When grouping by borough, Manhattan was the most expensive and Bronx was least expensive on average, which is consistent with what I expected. Manhattan is also the biggest, while Staten Island is the smallest of the neighborhood groups. Bronx had the most residential units and Staten Island had the least, which I did not expect. I expected Manhattan to have to least residential units because I think there are more office buildings and business there proportional to the other neighborhood groups.
+When looking at AirBNB availability, Manhattan seemed the busiest, as the AirBNBs are available or open on fewer days out of the year, and Staten Island was the most available, so probably the least popular with AirBNB guests. Of the options in Staten Island, the AirBNBs in Richmondtown were available 300 out of 365 days of the year, making this the least popular neighborhood in all of New York City. Morningside Heights in Manhattan is the most popular destination for AirBNB guests, as it is only available 43 days of the year, and booked the rest of the time.
+When looking to see the average year each borough was developed, Manhattan and Bronx showed the 1600s. This probably meant there were some low values in the data set skewing the mean calculation. The minimum year for Bronx showed 493, and minimum year for Manhattan was 1378, which cannot be accurate and probably led to the incorrect mean. Even Brooklyn’s minimum year was incorrect, showing 1492. Surprisingly, the correlation matrix did not show any particularly strong correlations. The strongest one was the correlation between price and mean square footage, which makes sense.</p>
+<div id="task-3-visualization" class="section level2">
+<h2>Task 3: Visualization</h2>
+<pre class="r"><code>library(ggplot2)
+
+#Relationship between Commercial and Residential units by neighborhood group
+ggplot(comb, aes(RESIDENTIAL.UNITS,COMMERCIAL.UNITS))+
+geom_point(aes(color=neighborhood_group)) + xlim(c(0,5.5))+ ylim(c(0,1)) + ggtitle(&quot;Relationship Between Commercial and Residential Units&quot;)</code></pre>
+<pre><code>## Warning: Removed 1244 rows containing missing values (geom_point).</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>#How many BNB in manhattan neighborhoods
+Manhattan &lt;- comb%&gt;%filter(neighborhood_group==&quot;Manhattan&quot;)
+ggplot(Manhattan, aes(neighborhood))+
+geom_bar(aes(fill=neighborhood))+
+coord_flip()+
+theme(legend.position=&quot;none&quot;) + ggtitle(&quot;Number of AirBNBs in Manhattan&quot;)</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
+<pre class="r"><code>#How many BNB by neighborhood group
+ggplot(comb, aes(neighborhood_group, fill=neighborhood_group),)+geom_bar(stat=&quot;count&quot;) +ggtitle(&quot;AirBnBs by Neighborhood Group&quot;) + theme(legend.position=&quot;none&quot;) + xlab(&quot;Neighborhood Group&quot;)</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-3-3.png" width="672" /></p>
+<pre class="r"><code>#Availability based on Neighborhood Group
+ggplot(comb, aes(x = neighborhood_group, y = availability_365, fill=neighborhood_group))+
+geom_bar(stat=&quot;summary&quot;,fun.y=&quot;mean&quot;)+
+geom_errorbar(stat=&quot;summary&quot;) + ggtitle(&quot;AirBNB Availability Based on Neighborhood Group&quot;) +theme(legend.position=&quot;none&quot;) +xlab(&quot;Neighborhood Group&quot;) +ylab(&quot;Availability(days)&quot;)</code></pre>
+<pre><code>## No summary function supplied, defaulting to `mean_se()</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-3-4.png" width="672" /></p>
+<pre class="r"><code>#Most common price range for neighborhoods in Manhattan
+ggplot(Manhattan, aes(x=price, fill=neighborhood)) +
+ geom_density(alpha=.75)+ xlim(c(1,2000))+ ggtitle(&quot;Price Points for Manhattan AirBNBs&quot;)</code></pre>
+<pre><code>## Warning: Removed 24 rows containing non-finite values (stat_density).</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-3-5.png" width="672" /></p>
+<pre class="r"><code>#Most common price range for all of NYC
+ggplot(comb, aes(x=price, fill=neighborhood_group)) +
+ geom_density(alpha=.75)+ xlim(c(1,2000))+ ggtitle(&quot;Price Points for AirBNBs&quot;)</code></pre>
+<pre><code>## Warning: Removed 51 rows containing non-finite values (stat_density).</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-3-6.png" width="672" /></p>
+<p>Graph 1: I wanted to see if there was a relationship between the number of commercial units and residential units in any one neighborhood group. Each individual point represents a neighborhood within each neighborhood group. I expected the neighborhoods in Manhattan to have more commercial than residential units because so much business is conducted in that part of the city. According to the results, there is no clear relationship between both variables. If anything can be extrapolated from this graph, there is a negative correlation between commercial and residential units in Bronx.</p>
+<p>Graph 2: When wrangling data, I saw Manhattan was the most popular AirBNB destination so I wanted to explore that neighborhood group more. I wanted to see which neighborhoods in Manhattan had the most AirBNBs. According to the results, Eastvillage has the most while Civic Center has the least. This may have to do with the overall proportion of homes in each of these neighborhoods (for ex, Civic Center may just be mostly a commercial neighborhood), but that would be interesting to explore. It would also have been nice to add a third dimension to the graph measuring how popular each neighborhood is with the “availibility_365” variable, but because this is a barplot and the availility variable is continuous, this was not possible.</p>
+<p>Graph 3: This graph shows how many AirBNBs there are in each neighborhood group. It is interesting to see tha although Brooklyn has over double the amount of AirBNBs, people are still willing to pay higher prices and stay in Manhattan, because in terms of popularity Manhattan is slightly more likely to be booked than Brooklyn. This is shown on Graph 4.</p>
+<p>Graph 4: Graph 4 shows how many days out of the year AirBNBs in each neighborhood group are available. As expected, Manhattan is the most popular, Brooklyn is a close second. These AirBNBs are booked out 2/3 of the year. It would be easy to find an AirBNB in Staten Island, though, seeing as how they are available almost 200 days out of 365. Standard error is low for all neighborhoods.</p>
+<p>Graph 5: This density plot shows the most common price points for AirBNBs in Manhattan. I chose this neighborhood group because I wanted to see how much people are paying for this most popular AirBNB destination. It seems most Manhattan neighborhoods fall within a similar pricepoint, with fancier areas like Tribeca and SoHo being outliers.</p>
+<p>Graph 6: This density plot shows that all neighborhood groups in New York seem to have overlapping price points, with Manhattan’s average being a little higher than the rest, as expected, and Brooklyn’s being the second highest. As confirmed by the previous plot, Brooklyn has the greatest number of AirBNBs in the city.</p>
+<p>I only had 2 categorical variables, and “neighborhood” was quite expansive, making it difficult to come up with plots that showed interaction between three variables.</p>
+<p>##Task4: PCA</p>
+<pre class="r"><code>comb1&lt;-comb%&gt;%select(-neighborhood)
+comb_nums&lt;-comb1%&gt;%select_if(is.numeric)%&gt;%scale
+rownames(comb_nums)&lt;-comb1$neighborhood_group
+comb_pca&lt;-princomp(na.omit(comb_nums), cor=TRUE, scores=TRUE)
+names(comb_pca)</code></pre>
+<pre><code>## [1] &quot;sdev&quot;     &quot;loadings&quot; &quot;center&quot;   &quot;scale&quot;    &quot;n.obs&quot;    &quot;scores&quot;   &quot;call&quot;</code></pre>
+<pre class="r"><code>summary(comb_pca, loadings=T)</code></pre>
+<pre><code>## Importance of components:
+##                           Comp.1    Comp.2    Comp.3     Comp.4     Comp.5
+## Standard deviation     1.4628844 1.4188988 1.2943289 1.10445847 1.01057208
+## Proportion of Variance 0.1646177 0.1548672 0.1288682 0.09383296 0.07855815
+## Cumulative Proportion  0.1646177 0.3194850 0.4483532 0.54218617 0.62074432
+##                            Comp.6     Comp.7     Comp.8    Comp.9    Comp.10
+## Standard deviation     0.97647726 0.93273656 0.91955888 0.8559779 0.84464538
+## Proportion of Variance 0.07334676 0.06692288 0.06504527 0.0563614 0.05487891
+## Cumulative Proportion  0.69409108 0.76101396 0.82605923 0.8824206 0.93729954
+##                           Comp.11    Comp.12      Comp.13
+## Standard deviation     0.65856069 0.61731886 1.792317e-02
+## Proportion of Variance 0.03336171 0.02931404 2.471077e-05
+## Cumulative Proportion  0.97066125 0.99997529 1.000000e+00
+## 
+## Loadings:
+##                                Comp.1 Comp.2 Comp.3 Comp.4 Comp.5 Comp.6 Comp.7
+## RESIDENTIAL.UNITS               0.445  0.302  0.282         0.190         0.132
+## COMMERCIAL.UNITS                0.419  0.160 -0.188        -0.317        -0.239
+## TOTAL.UNITS                     0.595  0.322  0.112                            
+## LAND.SQUARE.FEET                0.126 -0.186 -0.231 -0.156 -0.662  0.317  0.162
+## GROSS.SQUARE.FEET               0.232 -0.337 -0.252                0.132       
+## YEAR.BUILT                     -0.364  0.322  0.166        -0.339  0.338       
+## TAX.CLASS.AT.TIME.OF.SALE       0.225 -0.444 -0.198 -0.166        -0.220  0.150
+## price                                 -0.212 -0.139         0.485  0.700 -0.224
+## minimum_nights                        -0.140         0.582                0.704
+## number_of_reviews                      0.310 -0.523         0.214 -0.137  0.238
+## reviews_per_month                      0.356 -0.521 -0.105                     
+## calculated_host_listings_count        -0.141         0.573 -0.110 -0.363 -0.507
+## availability_365                       0.148 -0.337  0.496         0.246       
+##                                Comp.8 Comp.9 Comp.10 Comp.11 Comp.12 Comp.13
+## RESIDENTIAL.UNITS               0.452  0.123                  0.144   0.566 
+## COMMERCIAL.UNITS               -0.635                        -0.125   0.409 
+## TOTAL.UNITS                                                          -0.716 
+## LAND.SQUARE.FEET                0.336  0.316  0.111  -0.204  -0.200         
+## GROSS.SQUARE.FEET               0.312 -0.554 -0.505   0.239   0.165         
+## YEAR.BUILT                             0.171 -0.211   0.516   0.401         
+## TAX.CLASS.AT.TIME.OF.SALE      -0.156  0.282  0.370   0.371   0.481         
+## price                          -0.155  0.332                                
+## minimum_nights                 -0.239        -0.270                         
+## number_of_reviews               0.105  0.176          0.480  -0.470         
+## reviews_per_month                      0.111 -0.205  -0.494   0.517         
+## calculated_host_listings_count  0.228  0.378 -0.208                         
+## availability_365                      -0.398  0.603</code></pre>
+<pre class="r"><code>eigval&lt;-comb_pca$sdev^2
+varprop=round(eigval/sum(eigval),2) 
+ggplot()+geom_bar(aes(y=varprop,x=1:13),stat=&quot;identity&quot;)+xlab(&quot;&quot;)+geom_path(aes(y=varprop,x=1:13))+
+ geom_text(aes(x=1:13,y=varprop,label=round(varprop,2)),vjust=1,col=&quot;white&quot;,size=5)+
+ scale_y_continuous(breaks=seq(0,.6,.2),labels = scales::percent)+
+ scale_x_continuous(breaks=1:10)</code></pre>
+<pre><code>## Warning in min(diff(sort(x))): no non-missing arguments to min; returning Inf</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>round(cumsum(eigval)/sum(eigval),2) </code></pre>
+<pre><code>##  Comp.1  Comp.2  Comp.3  Comp.4  Comp.5  Comp.6  Comp.7  Comp.8  Comp.9 Comp.10 
+##    0.16    0.32    0.45    0.54    0.62    0.69    0.76    0.83    0.88    0.94 
+## Comp.11 Comp.12 Comp.13 
+##    0.97    1.00    1.00</code></pre>
+<pre class="r"><code>eigval</code></pre>
+<pre><code>##     Comp.1     Comp.2     Comp.3     Comp.4     Comp.5     Comp.6     Comp.7 
+## 2.14003065 2.01327385 1.67528719 1.21982852 1.02125592 0.95350784 0.86999749 
+##     Comp.8     Comp.9    Comp.10    Comp.11    Comp.12    Comp.13 
+## 0.84558852 0.73269821 0.71342581 0.43370218 0.38108257 0.00032124</code></pre>
+<pre class="r"><code>summary(comb_pca, loadings=T)</code></pre>
+<pre><code>## Importance of components:
+##                           Comp.1    Comp.2    Comp.3     Comp.4     Comp.5
+## Standard deviation     1.4628844 1.4188988 1.2943289 1.10445847 1.01057208
+## Proportion of Variance 0.1646177 0.1548672 0.1288682 0.09383296 0.07855815
+## Cumulative Proportion  0.1646177 0.3194850 0.4483532 0.54218617 0.62074432
+##                            Comp.6     Comp.7     Comp.8    Comp.9    Comp.10
+## Standard deviation     0.97647726 0.93273656 0.91955888 0.8559779 0.84464538
+## Proportion of Variance 0.07334676 0.06692288 0.06504527 0.0563614 0.05487891
+## Cumulative Proportion  0.69409108 0.76101396 0.82605923 0.8824206 0.93729954
+##                           Comp.11    Comp.12      Comp.13
+## Standard deviation     0.65856069 0.61731886 1.792317e-02
+## Proportion of Variance 0.03336171 0.02931404 2.471077e-05
+## Cumulative Proportion  0.97066125 0.99997529 1.000000e+00
+## 
+## Loadings:
+##                                Comp.1 Comp.2 Comp.3 Comp.4 Comp.5 Comp.6 Comp.7
+## RESIDENTIAL.UNITS               0.445  0.302  0.282         0.190         0.132
+## COMMERCIAL.UNITS                0.419  0.160 -0.188        -0.317        -0.239
+## TOTAL.UNITS                     0.595  0.322  0.112                            
+## LAND.SQUARE.FEET                0.126 -0.186 -0.231 -0.156 -0.662  0.317  0.162
+## GROSS.SQUARE.FEET               0.232 -0.337 -0.252                0.132       
+## YEAR.BUILT                     -0.364  0.322  0.166        -0.339  0.338       
+## TAX.CLASS.AT.TIME.OF.SALE       0.225 -0.444 -0.198 -0.166        -0.220  0.150
+## price                                 -0.212 -0.139         0.485  0.700 -0.224
+## minimum_nights                        -0.140         0.582                0.704
+## number_of_reviews                      0.310 -0.523         0.214 -0.137  0.238
+## reviews_per_month                      0.356 -0.521 -0.105                     
+## calculated_host_listings_count        -0.141         0.573 -0.110 -0.363 -0.507
+## availability_365                       0.148 -0.337  0.496         0.246       
+##                                Comp.8 Comp.9 Comp.10 Comp.11 Comp.12 Comp.13
+## RESIDENTIAL.UNITS               0.452  0.123                  0.144   0.566 
+## COMMERCIAL.UNITS               -0.635                        -0.125   0.409 
+## TOTAL.UNITS                                                          -0.716 
+## LAND.SQUARE.FEET                0.336  0.316  0.111  -0.204  -0.200         
+## GROSS.SQUARE.FEET               0.312 -0.554 -0.505   0.239   0.165         
+## YEAR.BUILT                             0.171 -0.211   0.516   0.401         
+## TAX.CLASS.AT.TIME.OF.SALE      -0.156  0.282  0.370   0.371   0.481         
+## price                          -0.155  0.332                                
+## minimum_nights                 -0.239        -0.270                         
+## number_of_reviews               0.105  0.176          0.480  -0.470         
+## reviews_per_month                      0.111 -0.205  -0.494   0.517         
+## calculated_host_listings_count  0.228  0.378 -0.208                         
+## availability_365                      -0.398  0.603</code></pre>
+<pre class="r"><code>comb_pca$loadings[1:7,1:2]%&gt;%as.data.frame%&gt;%rownames_to_column%&gt;%
+ggplot()+geom_hline(aes(yintercept=0),lty=2)+
+ geom_vline(aes(xintercept=0),lty=2)+ylab(&quot;PC2&quot;)+xlab(&quot;PC1&quot;)+
+ geom_segment(aes(x=0,y=0,xend=Comp.1,yend=Comp.2),arrow=arrow(),col=&quot;red&quot;)+
+ geom_label(aes(x=Comp.1*1.1,y=Comp.2*1.1,label=rowname))</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+<pre class="r"><code>ggplot()+geom_point(aes(comb_pca$scores[,1], comb_pca$scores[,2]))+xlab(&quot;PC1&quot;)+ylab(&quot;PC2&quot;)</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-4-3.png" width="672" /></p>
+<p>The strongest correlations between variables are visualized on the first graph based on the spacing of the arrows. This is why “Land Square Feet” and “Gross Square Feet” are right on top of each other. The square footage also correlates with the tax class at the time of the sale of the land, which makes sense. Generally, larger plots of land are taxed at higher rates than smaller plots. Year built was not correlated with any of the other varaibles.
+The second graph shows the association between PC1 and PC2, although there is not any distinct relationship between the two.No matter how far along the PC1 axis the data is, it is generally at the same height on PC2.</p>
+</div>

@@ -1,0 +1,12 @@
+"0","```{r setup, include=FALSE}
+"
+"2","Error: attempt to use zero-length variable name
+"
+"2","In addition: "
+"2","Warning message:
+"
+"2","In bookdown:::check_special_chars(files) :"
+"2","
+ "
+"2"," The filename ""content/finalproject (1).Rmd"" contains special characters. You may rename it to, e.g., ""content/finalproject--1-.Rmd"".
+"

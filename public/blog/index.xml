@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blogs on Sahar Jiwani</title>
+    <link>/blog/</link>
+    <description>Recent content in Blogs on Sahar Jiwani</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Wed, 11 Dec 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>My Blogpost </title>
+      <link>/blog/my-blogpost/</link>
+      <pubDate>Wed, 11 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/my-blogpost/</guid>
+      <description> Python is an intuitive and easy to learn coding language for someone who comes from a beginner coding background. As someone with very little experience coding, I really enjoyed learning Python. I found is made more sense to me than other languages like R. Here are some examples of the ways python is a functional and easy language to use:</description>
+    </item>
+    
+  </channel>
+</rss>
