@@ -7,7 +7,7 @@
     <meta name="author" content="Sahar Jiwani" />
     <meta name="description" content="This is my site">
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
-    <title>My Blogpost </title>
+    <title>Why I Enjoy Python</title>
     <meta name="generator" content="Hugo 0.60.1" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="/css/main.css" />
@@ -56,7 +56,7 @@
       <div class="container">
         <div class="blog-post">
           <h3>
-            <strong><a href="/blog/my-blogpost/">My Blogpost </a></strong>
+            <strong><a href="/blog/my-blogpost/">Why I Enjoy Python</a></strong>
           </h3>
         </div>
         <div class="blog-title">
@@ -83,7 +83,7 @@ list1[2]</code></pre>
 <pre class="python"><code>list1 [2:]</code></pre>
 <pre><code>## [&#39;c&#39;, &#39;d&#39;]</code></pre>
 <p>This allows a user to select just the position of the entry, without necissarily knowing what the entry is. This is a lot more complicated in other languages like R.</p>
-<p>In a given sentence, Python allows a user to count how many times each character shows up. Here is an example:</p>
+<p>In a given string, Python allows a user to count how many times each character shows up. Here is an example:</p>
 <pre class="python"><code>sentence= &quot;Python is awesome!&quot; 
 counts = {}            
 for c in sentence:     
@@ -114,6 +114,13 @@ string1=&quot;I am originally from New York City, which is about 1600 miles away
 
 re.findall(r&quot;[0-9]+&quot;,string1)</code></pre>
 <pre><code>## [&#39;1600&#39;, &#39;8&#39;, &#39;6&#39;, &#39;5&#39;, &#39;3&#39;, &#39;566&#39;, &#39;62&#39;, &#39;90293&#39;, &#39;12&#39;]</code></pre>
+<p>Finally, there are ways to solve real world, computation biology problems with Python. For example, if someone wanted to see how many times a certain genomic sequence will be cut by a certain restriction enzyme, they can use Python to figure it out. Here is an illustration:
+If a restriction enzyme cut at ANTAAT and GCRWTG, we can see how many cuts there would be of a given nucleotide sequence</p>
+<pre class="python"><code>sequence=&quot;ATGGCAATAACCCCCCGTTTCTACTTCTAGAGGAGAAAAGTATTGACATGAGCGCTCCCGGCACAAGGGCCAAAGAAGTCTCCAATTTCTTATTTCCGAATGACATGCGTCTCCTTGCGGGTAAATCACCGACCGCAATTCATAGAAGCCTGGGGGAACAGATAGGTCTAATTAGCTTAAGAGAGTAAATCCTGGGATCATTCAGTAGTAACCATAAACTTACGCTGGGGCTTCTTCGGCGGATTTTTACAGTTACCAACCAGGAGATTTGAAGTAAATCAGTTGAGGATTTAGCCGCGCTATCCGGTAATCTCCAAATTAAAACATACCGTTCCATGAAGGCTAGAATTACTTACCGGCCTTTTCCATGCCTGCGCTATACCCCCCCACTCTCCCGCTTATCCGTCCGAGCGGAGGCAGTGCGATCCTCCGTTAAGATATTCTTACGTGTGACGTAGCTATGTATTTTGCAGAGCTGGCGAACGCGTTGAACACTTCACAGATGGTAGGGATTCGGGTAAAGGGCGTATAATTGGGGACTAACATAGGCGTAGACTACGATGGCGCCAACTCAATCGCAGCTCGAGCGCCCTGAATAACGTACTCATCTCAACT&quot;
+
+re.findall(r&quot;A.TAAT|GC[A|G][A|T]TG&quot;,sequence)</code></pre>
+<pre><code>## [&#39;GCGTTG&#39;]</code></pre>
+<p>In this entire sequence, there will be 1 cut producing 2 fragments of DNA.</p>
 <p><img src="/blog/2019-12-11-my-blogpost_files/download.png" /></p>
 
               <hr>

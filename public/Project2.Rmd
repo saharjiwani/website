@@ -1,8 +1,9 @@
 ---
-title: "Project2"
+title: "Statistical Modeling"
 output: 
   html_document: default
   pdf_document: default
+date: '2019-12-11' 
 ---
 
 ```{r setup, include=FALSE}

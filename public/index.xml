@@ -12,7 +12,26 @@
     
     
     <item>
-      <title>My Blogpost </title>
+      <title>Exploratory Data Project</title>
+      <link>/project1/</link>
+      <pubDate>Wed, 11 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/project1/</guid>
+      <description>Both of my datasets involved New York City. My first dataset is about AirBNB data for New York City. This dataset, after I removed some extraneous variables, includes price, minimum nights, availability out of the year, and number of reviews, amongst other things. The second dataset involved New York City real estate data. This set includes tax class at time of sale, sale price, square footage, and zipcode, amongst others.</description>
+    </item>
+    
+    <item>
+      <title>Statistical Modeling</title>
+      <link>/project2/</link>
+      <pubDate>Wed, 11 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/project2/</guid>
+      <description>Sahar Jiwani, sj26895
+The researchers of this dataset were testing the IQ levels of post-comatose patients. The first variable, id, is patient’s ID number. The second variable, days, is the number of days after awaking from the coma that IQ was measured. The third variable, duration, is how many days the coma lasted. The fourth variable, sex, identifies if the patient is male or female. The fifth variable, age, is age at the time of injury.</description>
+    </item>
+    
+    <item>
+      <title>Why I Enjoy Python</title>
       <link>/blog/my-blogpost/</link>
       <pubDate>Wed, 11 Dec 2019 00:00:00 +0000</pubDate>
       
@@ -29,25 +48,6 @@ If faced with a long list, python makes it very easy to select certain entries.<
       <guid>/projects/</guid>
       <description>Projects Here are some projects I have been working on:
 -Project 1 -Project 2</description>
-    </item>
-    
-    <item>
-      <title>Exploratory Data Project</title>
-      <link>/project1/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/project1/</guid>
-      <description>Both of my datasets involved New York City. My first dataset is about AirBNB data for New York City. This dataset, after I removed some extraneous variables, includes price, minimum nights, availability out of the year, and number of reviews, amongst other things. The second dataset involved New York City real estate data. This set includes tax class at time of sale, sale price, square footage, and zipcode, amongst others.</description>
-    </item>
-    
-    <item>
-      <title>Project2</title>
-      <link>/project2/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/project2/</guid>
-      <description>Sahar Jiwani, sj26895
-The researchers of this dataset were testing the IQ levels of post-comatose patients. The first variable, id, is patient’s ID number. The second variable, days, is the number of days after awaking from the coma that IQ was measured. The third variable, duration, is how many days the coma lasted. The fourth variable, sex, identifies if the patient is male or female. The fifth variable, age, is age at the time of injury.</description>
     </item>
     
     <item>

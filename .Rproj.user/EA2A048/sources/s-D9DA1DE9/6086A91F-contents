@@ -3,6 +3,7 @@ title: "Exploratory Data Project"
 output:
   pdf_document: default
   html_document: default
+date: '2019-12-11'
 ---
 
 ```{r setup, include=FALSE}

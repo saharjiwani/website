@@ -1,8 +1,9 @@
 ---
-title: "Project2"
+title: "Statistical Modeling"
 output: 
   html_document: default
   pdf_document: default
+date: '2019-12-11' 
 ---
 
 
@@ -156,7 +157,7 @@ summary(fit)$r.sq</code></pre>
 })
  resid_resamp%&gt;%t%&gt;%as.data.frame%&gt;%summarize_all(sd)</code></pre>
 <pre><code>##   (Intercept)      age_c  sexMale
-## 1    1.778938 0.05942167 2.012726</code></pre>
+## 1    1.779532 0.05850951 2.020815</code></pre>
 <p><strong>The new bootstrapped standard error for age decreased substantially from both the orginal value and the robust SE value. The orginal SE was 0.148088, the robust standard error increased to 0.1963573, and the boostrapped standard error is only 0.060064.
 The boostrapped standard error for sexMale was also less than the other standard errors. The original was 2.032842, the robust SE increased to 2.3540817 and the bootstrapped value is 2.00616</strong></p>
 <p>##Task 5: Logistic Regression</p>

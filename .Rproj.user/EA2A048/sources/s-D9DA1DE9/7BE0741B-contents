@@ -1,5 +1,5 @@
 ---
-title: 'My Blogpost '
+title: 'Why I Enjoy Python'
 author: Sahar Jiwani
 date: '2019-12-11'
 slug: my-blogpost
@@ -19,7 +19,7 @@ list1 [2:]
 ```
 This allows a user to select just the position of the entry, without necissarily knowing what the entry is. This is a lot more complicated in other languages like R.
 
-In a given sentence, Python allows a user to count how many times each character shows up. Here is an example:
+In a given string, Python allows a user to count how many times each character shows up. Here is an example:
 ```{python}
 sentence= "Python is awesome!" 
 counts = {}            
@@ -33,7 +33,6 @@ for c in counts:
 ```
 
 Returning certain characters from a string is also really easy to do in Python.  
-
 ```{python}
 import re
 
@@ -41,5 +40,16 @@ string1="I am originally from New York City, which is about 1600 miles away from
 
 re.findall(r"[0-9]+",string1)
 ```
+
+Finally, there are ways to solve real world, computation biology problems with Python. For example, if someone wanted to see how many times a certain genomic sequence will be cut by a certain restriction enzyme, they can use Python to figure it out. Here is an illustration:
+If a restriction enzyme cut at ANTAAT and GCRWTG, we can see how many cuts there would be of a given nucleotide sequence 
+
+```{python}
+sequence="ATGGCAATAACCCCCCGTTTCTACTTCTAGAGGAGAAAAGTATTGACATGAGCGCTCCCGGCACAAGGGCCAAAGAAGTCTCCAATTTCTTATTTCCGAATGACATGCGTCTCCTTGCGGGTAAATCACCGACCGCAATTCATAGAAGCCTGGGGGAACAGATAGGTCTAATTAGCTTAAGAGAGTAAATCCTGGGATCATTCAGTAGTAACCATAAACTTACGCTGGGGCTTCTTCGGCGGATTTTTACAGTTACCAACCAGGAGATTTGAAGTAAATCAGTTGAGGATTTAGCCGCGCTATCCGGTAATCTCCAAATTAAAACATACCGTTCCATGAAGGCTAGAATTACTTACCGGCCTTTTCCATGCCTGCGCTATACCCCCCCACTCTCCCGCTTATCCGTCCGAGCGGAGGCAGTGCGATCCTCCGTTAAGATATTCTTACGTGTGACGTAGCTATGTATTTTGCAGAGCTGGCGAACGCGTTGAACACTTCACAGATGGTAGGGATTCGGGTAAAGGGCGTATAATTGGGGACTAACATAGGCGTAGACTACGATGGCGCCAACTCAATCGCAGCTCGAGCGCCCTGAATAACGTACTCATCTCAACT"
+
+re.findall(r"A.TAAT|GC[A|G][A|T]TG",sequence)
+```
+In this entire sequence, there will be 1 cut producing 2 fragments of DNA.
+
 
 ![](/blog/2019-12-11-my-blogpost_files/download.png)
