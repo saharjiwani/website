@@ -8,7 +8,7 @@ tags: []
 description: ''
 ---
 Python is an intuitive and easy to learn coding language for someone who comes from a beginner coding background. As someone with very little experience coding, I really enjoyed learning Python. I found is made more sense to me than other languages like R. 
-Here are some examples of the ways python is a functional and easy language to use:
+Here are some examples of the ways python is a functional and easy language to use!
 
 
 ```{r}
