@@ -73,7 +73,48 @@
 
 
 <p>Python is an intuitive and easy to learn coding language for someone who comes from a beginner coding background. As someone with very little experience coding, I really enjoyed learning Python. I found is made more sense to me than other languages like R.
-Here are some examples of the ways python is a functional and easy language to use:<img src="/blog/2019-12-11-my-blogpost_files/download.png" /></p>
+Here are some examples of the ways python is a functional and easy language to use!</p>
+<p>If faced with a long list, python makes it very easy to select certain entries. Here is an example.</p>
+<pre class="python"><code>list1= [&quot;a&quot;, &quot;b&quot;,&quot;c&quot;,&quot;d&quot;] 
+list1[2]</code></pre>
+<pre><code>## &#39;c&#39;</code></pre>
+<pre class="python"><code>list1 [-1]</code></pre>
+<pre><code>## &#39;d&#39;</code></pre>
+<pre class="python"><code>list1 [2:]</code></pre>
+<pre><code>## [&#39;c&#39;, &#39;d&#39;]</code></pre>
+<p>This allows a user to select just the position of the entry, without necissarily knowing what the entry is. This is a lot more complicated in other languages like R.</p>
+<p>In a given sentence, Python allows a user to count how many times each character shows up. Here is an example:</p>
+<pre class="python"><code>sentence= &quot;Python is awesome!&quot; 
+counts = {}            
+for c in sentence:     
+    if c in counts:    
+        counts[c]+=1   
+    else:
+        counts[c]=1  
+for c in counts:
+    print(c, &quot;appears&quot;, counts[c],&quot;times&quot;)</code></pre>
+<pre><code>## (&#39;a&#39;, &#39;appears&#39;, 1, &#39;times&#39;)
+## (&#39; &#39;, &#39;appears&#39;, 2, &#39;times&#39;)
+## (&#39;e&#39;, &#39;appears&#39;, 2, &#39;times&#39;)
+## (&#39;i&#39;, &#39;appears&#39;, 1, &#39;times&#39;)
+## (&#39;h&#39;, &#39;appears&#39;, 1, &#39;times&#39;)
+## (&#39;m&#39;, &#39;appears&#39;, 1, &#39;times&#39;)
+## (&#39;o&#39;, &#39;appears&#39;, 2, &#39;times&#39;)
+## (&#39;n&#39;, &#39;appears&#39;, 1, &#39;times&#39;)
+## (&#39;P&#39;, &#39;appears&#39;, 1, &#39;times&#39;)
+## (&#39;s&#39;, &#39;appears&#39;, 2, &#39;times&#39;)
+## (&#39;!&#39;, &#39;appears&#39;, 1, &#39;times&#39;)
+## (&#39;t&#39;, &#39;appears&#39;, 1, &#39;times&#39;)
+## (&#39;w&#39;, &#39;appears&#39;, 1, &#39;times&#39;)
+## (&#39;y&#39;, &#39;appears&#39;, 1, &#39;times&#39;)</code></pre>
+<p>Returning certain characters from a string is also really easy to do in Python.</p>
+<pre class="python"><code>import re
+
+string1=&quot;I am originally from New York City, which is about 1600 miles away from where I live now, Houston. I moved when I was 8 years old and my sister was 6.5 years old. Today, I go to UT Austin, a 3 hour drive from my hometown. Also, my favorite numbers are 566, 62, 90293, and 12&quot;
+
+re.findall(r&quot;[0-9]+&quot;,string1)</code></pre>
+<pre><code>## [&#39;1600&#39;, &#39;8&#39;, &#39;6&#39;, &#39;5&#39;, &#39;3&#39;, &#39;566&#39;, &#39;62&#39;, &#39;90293&#39;, &#39;12&#39;]</code></pre>
+<p><img src="/blog/2019-12-11-my-blogpost_files/download.png" /></p>
 
               <hr>
               <div class="related-posts">

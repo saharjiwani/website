@@ -10,11 +10,6 @@ description: ''
 Python is an intuitive and easy to learn coding language for someone who comes from a beginner coding background. As someone with very little experience coding, I really enjoyed learning Python. I found is made more sense to me than other languages like R. 
 Here are some examples of the ways python is a functional and easy language to use!
 
-
-```{r}
-install.packages("reticulate")
-``` 
-
 If faced with a long list, python makes it very easy to select certain entries. Here is an example. 
 ```{python}
 list1= ["a", "b","c","d"] 
@@ -42,7 +37,7 @@ Returning certain characters from a string is also really easy to do in Python.
 ```{python}
 import re
 
-string1="I am originiall from New York City, about 1600 miles away from where I live now, Houston. I moved when I was 8 years old and my sister was 6.5 years old. Today, I go to UT Austin, a 3 hour drive from my hometown. Also, my favorite numbers are 566, 62, 90293, and 12"
+string1="I am originally from New York City, which is about 1600 miles away from where I live now, Houston. I moved when I was 8 years old and my sister was 6.5 years old. Today, I go to UT Austin, a 3 hour drive from my hometown. Also, my favorite numbers are 566, 62, 90293, and 12"
 
 re.findall(r"[0-9]+",string1)
 ```
