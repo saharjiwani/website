@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Both of my datasets involved New York City. My first dataset is about AirBNB data for New York City. This dataset, after I removed some extraneous variables, includes price, minimum nights, availability out of the year, and number of reviews, amongst other things. The second dataset involved New York City real estate data. This set includes tax class at time of sale, sale price, square footage, and zipcode, amongst others. I chose data sets about New York City becuase I am originally from there, and was interested to explore some data about my hometown. I found both of these data sets from the Kaggle database. I expected some associations between price points and some of the variables. For example, I expected AirBNBs in Manhattan to be the most expensive, for price to increase with squre footage, and the number of reviews to negatively correlate with availability. 
 
-##Task 1: Tidying and Joining
+#Task 1: Tidying and Joining
 ```{r}
 #data(package = .packages(all.available = TRUE))
 library(ggplot2)
@@ -47,7 +47,7 @@ glimpse(comb)
 Both of my datasets were tidy so in order to make them unitidy, I employed the pivot_wider function. This led to individual variables having their own column, which is not tidy. To re-tidy, I used pivot_longer. 
 When it came time to join both sets, I chose to use inner join because there are so many neighborhoods in New York City, the data would have become too massive and would not have added any value to the analysis. By selecting only for the neighborhoods both sets have in common, the data becomes managable and trends become easier to spot. 
 
-##Task 2: Wrangling
+#Task 2: Wrangling
 ```{r}
 comb%>%filter(neighborhood=="chelsea")
 comb%>%slice(1:5)
@@ -72,7 +72,7 @@ comb %>% group_by(price) %>% na.omit() %>%
 When looking at AirBNB availability, Manhattan seemed the busiest, as the AirBNBs are available or open on fewer days out of the year, and Staten Island was the most available, so probably the least popular with AirBNB guests. Of the options in Staten Island, the AirBNBs in Richmondtown were available 300 out of 365 days of the year, making this the least popular neighborhood in all of New York City. Morningside Heights in Manhattan is the most popular destination for AirBNB guests, as it is only available 43 days of the year, and booked the rest of the time. 
 When looking to see the average year each borough was developed, Manhattan and Bronx showed the 1600s. This probably meant there were some low values in the data set skewing the mean calculation. The minimum year for Bronx showed 493, and minimum year for Manhattan was 1378, which cannot be accurate and probably led to the incorrect mean. Even Brooklyn's minimum year was incorrect, showing 1492. Surprisingly, the correlation matrix did not show any particularly strong correlations. The strongest one was the correlation between price and mean square footage, which makes sense.  
  
-## Task 3: Visualization
+#Task 3: Visualization
 ```{r}
 library(ggplot2)
 

@@ -26,8 +26,7 @@
       <pubDate>Wed, 11 Dec 2019 00:00:00 +0000</pubDate>
       
       <guid>/project2/</guid>
-      <description>Sahar Jiwani, sj26895
-The researchers of this dataset were testing the IQ levels of post-comatose patients. The first variable, id, is patient’s ID number. The second variable, days, is the number of days after awaking from the coma that IQ was measured. The third variable, duration, is how many days the coma lasted. The fourth variable, sex, identifies if the patient is male or female. The fifth variable, age, is age at the time of injury.</description>
+      <description>The researchers of this dataset were testing the IQ levels of post-comatose patients. The first variable, id, is patient’s ID number. The second variable, days, is the number of days after awaking from the coma that IQ was measured. The third variable, duration, is how many days the coma lasted. The fourth variable, sex, identifies if the patient is male or female. The fifth variable, age, is age at the time of injury.</description>
     </item>
     
     <item>
@@ -36,8 +35,8 @@ The researchers of this dataset were testing the IQ levels of post-comatose pati
       <pubDate>Wed, 11 Dec 2019 00:00:00 +0000</pubDate>
       
       <guid>/blog/my-blogpost/</guid>
-      <description>Python is an intuitive and easy to learn coding language for someone who comes from a beginner coding background. As someone with very little experience coding, I really enjoyed learning Python. I found is made more sense to me than other languages like R. Here are some examples of the ways python is a functional and easy language to use!
-If faced with a long list, python makes it very easy to select certain entries.</description>
+      <description>Python is an intuitive and easy to learn coding language for someone who comes from a beginner coding background. As someone with very little coding experience, I really enjoyed learning Python because I found it has made more sense to me than other languages like R. Here are some examples of the ways Python is a functional and easy language to use!
+If faced with a long list, Python makes it very easy to select certain entries.</description>
     </item>
     
     <item>

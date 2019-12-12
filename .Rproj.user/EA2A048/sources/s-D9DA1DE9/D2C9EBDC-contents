@@ -9,11 +9,9 @@ date: '2019-12-11'
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-**Sahar Jiwani, sj26895**
+The researchers of this dataset were testing the IQ levels of post-comatose patients. The first variable, id, is patient's ID number. The second variable, days, is the number of days after awaking from the coma that IQ was measured. The third variable, duration, is how many days the coma lasted. The fourth variable, sex, identifies if the patient is male or female. The fifth variable, age, is age at the time of injury. The sixth variable, piq, is performance IQ score while the seventh variable, viq, is the verbal IQ score.
 
-**The researchers of this dataset were testing the IQ levels of post-comatose patients. The first variable, id, is patient's ID number. The second variable, days, is the number of days after awaking from the coma that IQ was measured. The third variable, duration, is how many days the coma lasted. The fourth variable, sex, identifies if the patient is male or female. The fifth variable, age, is age at the time of injury. The sixth variable, piq, is performance IQ score while the seventh variable, viq, is the verbal IQ score.** 
-
-##Task 1: MANOVA
+#Task 1: MANOVA
 ```{r}
 Wong<-read.csv("Wong.csv")
 library(dplyr)
@@ -26,10 +24,10 @@ summary(man1)
 #Bonferroni
 .05/6
 ```
-**The result of the MANOVA was not significant (p-value=0.1645) This means that for each response variable (age, duration, days, piq, viq), the means of the groups of the categorical variable (sex) are equal. If the MANOVA was significant, I would have performed 5 ANOVAs, one for each numeric variable, but no post-hoc tests because the response variable only has two levels. Including the MANOVA, this is 6 total tests. The probability of a Type I error 26.49% The value of Bonferroni's correction is 0.0083333. There are many MANOVA assumptions. The ones that are likely to be met are independent sample and random observation and no extreme outliers. The rest of the assumptions are probably not met. No multicollinearity, for example, may not be likely as those who score highly on piq probably also score highly on viq. Multivariate normality is very hard to show and chances are this data set fails to meet this assumption claiming the residuals are normally distributed. The final assumption is that there is homogeneity of within-group covariance matrices, which is likely also not met.**  
+The result of the MANOVA was not significant (p-value=0.1645) This means that for each response variable (age, duration, days, piq, viq), the means of the groups of the categorical variable (sex) are equal. If the MANOVA was significant, I would have performed 5 ANOVAs, one for each numeric variable, but no post-hoc tests because the response variable only has two levels. Including the MANOVA, this is 6 total tests. The probability of a Type I error 26.49% The value of Bonferroni's correction is 0.0083333. There are many MANOVA assumptions. The ones that are likely to be met are independent sample and random observation and no extreme outliers. The rest of the assumptions are probably not met. No multicollinearity, for example, may not be likely as those who score highly on piq probably also score highly on viq. Multivariate normality is very hard to show and chances are this data set fails to meet this assumption claiming the residuals are normally distributed. The final assumption is that there is homogeneity of within-group covariance matrices, which is likely also not met. 
 
 
-## Task 2: Randomization Test
+#Task 2: Randomization Test
 ```{r} 
 #Two-sample t-test 
 t.test(data=coma,piq~sex)
@@ -45,9 +43,9 @@ ggplot(aes(t))+geom_histogram(aes(y=..density..), bins=30)+
 
 ```
 
-**I wanted to test if the means across the IQ test scores were significantly different from the means of the levels of the sex variable. The null hypothesis for both tests is that there is no difference in the means between the IQ test scores and sex. The alternative hypothesis is that there is a difference in the means between the two variables. My first t-test, which looked at sex and viq, had a p-value of 0.6829. This means there is no significant difference in the means of the viq across the means of the two sexes. Therefore, males and females scored the same, on average, on the viq. The same is true for the second t-test in which I tested sex and piq. The p-value for this test was 0.3725, which is not significant. This means males and females scored the same, on average, on the piq.**
+I wanted to test if the means across the IQ test scores were significantly different from the means of the levels of the sex variable. The null hypothesis for both tests is that there is no difference in the means between the IQ test scores and sex. The alternative hypothesis is that there is a difference in the means between the two variables. My first t-test, which looked at sex and viq, had a p-value of 0.6829. This means there is no significant difference in the means of the viq across the means of the two sexes. Therefore, males and females scored the same, on average, on the viq. The same is true for the second t-test in which I tested sex and piq. The p-value for this test was 0.3725, which is not significant. This means males and females scored the same, on average, on the piq.
 
-##Task 3: Linear Regression
+#Task 3: Linear Regression
  
 ```{R}
 library(lmtest)
@@ -71,9 +69,9 @@ coeftest(fit, vcov=vcovHC(fit))[,1:2]
 summary(fit)$r.sq
 ```
 
-**The intercept explains the likely piq value when age and sex are 0. Since it is impossible for sex and to equal 0, this number does not provide any meaningful information. Age_c tells us if we were to hold sex constant, every 1 year increase in age would increase piq scores by .0822 points. SexMale tells us that controlling for age, being a male will decrease the piq score by 2.17 points compared to females. The interaction explains if the effect of sex on piq score differs by age. The graphs for linearity, normality, and homoskedasticity all look normal meaning all assumptions are met. When recomputing the regression with robust standard error via the coeftest function, all the standard errors increased compared to the regualar regression. The proportion of the variation explained by my model is 0.007820345.**
+The intercept explains the likely piq value when age and sex are 0. Since it is impossible for sex and to equal 0, this number does not provide any meaningful information. Age_c tells us if we were to hold sex constant, every 1 year increase in age would increase piq scores by .0822 points. SexMale tells us that controlling for age, being a male will decrease the piq score by 2.17 points compared to females. The interaction explains if the effect of sex on piq score differs by age. The graphs for linearity, normality, and homoskedasticity all look normal meaning all assumptions are met. When recomputing the regression with robust standard error via the coeftest function, all the standard errors increased compared to the regualar regression. The proportion of the variation explained by my model is 0.007820345.
 
-##Task 4: Boostrapping
+#Task 4: Bootstrapping
 ```{r}
 fit<-lm(piq_c~ age_c * sex, data=coma); summary(fit)
 #boostrap residuals 
@@ -88,11 +86,11 @@ fit<-lm(piq_c~ age_c * sex, data=coma); summary(fit)
  resid_resamp%>%t%>%as.data.frame%>%summarize_all(sd)
 ```
 
-**The new bootstrapped standard error for age decreased substantially from both the orginal value and the robust SE value. The orginal SE was 0.148088, the robust standard error increased to 0.1963573, and the boostrapped standard error is only 0.060064.
-The boostrapped standard error for sexMale was also less than the other standard errors. The original was 2.032842, the robust SE increased to 2.3540817 and the bootstrapped value is 2.00616** 
+The new bootstrapped standard error for age decreased substantially from both the orginal value and the robust SE value. The orginal SE was 0.148088, the robust standard error increased to 0.1963573, and the boostrapped standard error is only 0.060064.
+The boostrapped standard error for sexMale was also less than the other standard errors. The original was 2.032842, the robust SE increased to 2.3540817 and the bootstrapped value is 2.00616
 
 
-##Task 5: Logistic Regression 
+#Task 5:Logistic Regression 
 ```{r}
 #regression
 fit2<-glm(sex~age+duration+piq, family="binomial", data=coma)
@@ -189,9 +187,9 @@ ggplot(coma,aes(logit, fill=as.factor(sex)))+geom_density(alpha=.3)+
 
 ```
 
-**It is difficult to interpret these coefficients because it is unlikely that factors like age, duration, and piq can accurately predict if the patient is male or female. After exponentiation of coefficients, according to this regression, the coefficient estimate for age tells us that for every 1 year increase in age, the odds of being a female multiply by 1.01. For every 1 day increase in duration, odds of being a woman multiplies by 1.018, meaning females probably had longer durations than men by 1.018 days. For every 1 point increase in piq, the odds of being a female multiplies by 0.99, which means females had higher piq scores than males. Accuracy is 0.7854985, which is the porportion of correctly classified cases. Sensitivity is 1, meaning the true positive rate was 100% The confusion matrix did not predict "0" for anyone, meaning predicted probabilities were above 0.5. Specificity is 0, which is the true negative rate. PPV is 0.78549, which is the positive predicted value. AUC is 0.6048212, which is why the ROC graph is not a perfect curve.** 
+It is difficult to interpret these coefficients because it is unlikely that factors like age, duration, and piq can accurately predict if the patient is male or female. After exponentiation of coefficients, according to this regression, the coefficient estimate for age tells us that for every 1 year increase in age, the odds of being a female multiply by 1.01. For every 1 day increase in duration, odds of being a woman multiplies by 1.018, meaning females probably had longer durations than men by 1.018 days. For every 1 point increase in piq, the odds of being a female multiplies by 0.99, which means females had higher piq scores than males. Accuracy is 0.7854985, which is the porportion of correctly classified cases. Sensitivity is 1, meaning the true positive rate was 100% The confusion matrix did not predict "0" for anyone, meaning predicted probabilities were above 0.5. Specificity is 0, which is the true negative rate. PPV is 0.78549, which is the positive predicted value. AUC is 0.6048212, which is why the ROC graph is not a perfect curve. 
 
-##Task 6: LASSO
+#Task 6: LASSO
 ```{r}
 library(glmnet)
 library(dplyr)
@@ -218,5 +216,5 @@ for(i in 1:k){
 mean(diags)
 summary(fit5)
 ```
-**The variables retained after conducting the lasso regression is viq and duration. For the regression, I did not include categorial variables or variables that did not make sense to include such as the mean centered variables in the dataset. The residual standard error was 11.42, which is much smaller than the standard error from the 5-fold CV, which was 7253.34.**
+The variables retained after conducting the lasso regression is viq and duration. For the regression, I did not include categorial variables or variables that did not make sense to include such as the mean centered variables in the dataset. The residual standard error was 11.42, which is much smaller than the standard error from the 5-fold CV, which was 7253.34.
 

@@ -73,7 +73,7 @@
 
 
 <p>Both of my datasets involved New York City. My first dataset is about AirBNB data for New York City. This dataset, after I removed some extraneous variables, includes price, minimum nights, availability out of the year, and number of reviews, amongst other things. The second dataset involved New York City real estate data. This set includes tax class at time of sale, sale price, square footage, and zipcode, amongst others. I chose data sets about New York City becuase I am originally from there, and was interested to explore some data about my hometown. I found both of these data sets from the Kaggle database. I expected some associations between price points and some of the variables. For example, I expected AirBNBs in Manhattan to be the most expensive, for price to increase with squre footage, and the number of reviews to negatively correlate with availability.</p>
-<p>##Task 1: Tidying and Joining</p>
+<p>#Task 1: Tidying and Joining</p>
 <pre class="r"><code>#data(package = .packages(all.available = TRUE))
 library(ggplot2)
 library(tidyr)
@@ -139,7 +139,7 @@ glimpse(comb)</code></pre>
 ## $ neighborhood_group             &lt;fct&gt; Staten Island, Staten Island, Staten I…</code></pre>
 <p>Both of my datasets were tidy so in order to make them unitidy, I employed the pivot_wider function. This led to individual variables having their own column, which is not tidy. To re-tidy, I used pivot_longer.
 When it came time to join both sets, I chose to use inner join because there are so many neighborhoods in New York City, the data would have become too massive and would not have added any value to the analysis. By selecting only for the neighborhoods both sets have in common, the data becomes managable and trends become easier to spot.</p>
-<p>##Task 2: Wrangling</p>
+<p>#Task 2: Wrangling</p>
 <pre class="r"><code>comb%&gt;%filter(neighborhood==&quot;chelsea&quot;)</code></pre>
 <pre><code>## # A tibble: 1,113 x 15
 ##    neighborhood RESIDENTIAL.UNI… COMMERCIAL.UNITS TOTAL.UNITS LAND.SQUARE.FEET
@@ -366,8 +366,7 @@ When it came time to join both sets, I chose to use inner join because there are
 <p>When arranging each neighborhood by price, Astoria was the most expensive and Bedford Stuyvesant was least expensive. When grouping by borough, Manhattan was the most expensive and Bronx was least expensive on average, which is consistent with what I expected. Manhattan is also the biggest, while Staten Island is the smallest of the neighborhood groups. Bronx had the most residential units and Staten Island had the least, which I did not expect. I expected Manhattan to have to least residential units because I think there are more office buildings and business there proportional to the other neighborhood groups.
 When looking at AirBNB availability, Manhattan seemed the busiest, as the AirBNBs are available or open on fewer days out of the year, and Staten Island was the most available, so probably the least popular with AirBNB guests. Of the options in Staten Island, the AirBNBs in Richmondtown were available 300 out of 365 days of the year, making this the least popular neighborhood in all of New York City. Morningside Heights in Manhattan is the most popular destination for AirBNB guests, as it is only available 43 days of the year, and booked the rest of the time.
 When looking to see the average year each borough was developed, Manhattan and Bronx showed the 1600s. This probably meant there were some low values in the data set skewing the mean calculation. The minimum year for Bronx showed 493, and minimum year for Manhattan was 1378, which cannot be accurate and probably led to the incorrect mean. Even Brooklyn’s minimum year was incorrect, showing 1492. Surprisingly, the correlation matrix did not show any particularly strong correlations. The strongest one was the correlation between price and mean square footage, which makes sense.</p>
-<div id="task-3-visualization" class="section level2">
-<h2>Task 3: Visualization</h2>
+<p>#Task 3: Visualization</p>
 <pre class="r"><code>library(ggplot2)
 
 #Relationship between Commercial and Residential units by neighborhood group
@@ -531,7 +530,6 @@ ggplot()+geom_hline(aes(yintercept=0),lty=2)+
 <p><img src="/Project1_files/figure-html/unnamed-chunk-4-3.png" width="672" /></p>
 <p>The strongest correlations between variables are visualized on the first graph based on the spacing of the arrows. This is why “Land Square Feet” and “Gross Square Feet” are right on top of each other. The square footage also correlates with the tax class at the time of the sale of the land, which makes sense. Generally, larger plots of land are taxed at higher rates than smaller plots. Year built was not correlated with any of the other varaibles.
 The second graph shows the association between PC1 and PC2, although there is not any distinct relationship between the two.No matter how far along the PC1 axis the data is, it is generally at the same height on PC2.</p>
-</div>
 
               <hr>
               <div class="related-posts">

@@ -7,19 +7,20 @@ categories: []
 tags: []
 description: ''
 ---
-Python is an intuitive and easy to learn coding language for someone who comes from a beginner coding background. As someone with very little experience coding, I really enjoyed learning Python. I found is made more sense to me than other languages like R. 
-Here are some examples of the ways python is a functional and easy language to use!
+Python is an intuitive and easy to learn coding language for someone who comes from a beginner coding background. As someone with very little coding experience, I really enjoyed learning Python because I found it has made more sense to me than other languages like R. 
+Here are some examples of the ways Python is a functional and easy language to use!
 
-If faced with a long list, python makes it very easy to select certain entries. Here is an example. 
+If faced with a long list, Python makes it very easy to select certain entries. Here is an example. 
 ```{python}
 list1= ["a", "b","c","d"] 
 list1[2]
 list1 [-1]
 list1 [2:]
 ```
-This allows a user to select just the position of the entry, without necissarily knowing what the entry is. This is a lot more complicated in other languages like R.
+This allows a user to select just the position of the entry, without necissarily knowing what the entry is. This is more complicated and involved in other languages like R.
 
-In a given string, Python allows a user to count how many times each character shows up. Here is an example:
+
+In a given string, Python allows a user to count how many times each character shows up very easily. Here is an example:
 ```{python}
 sentence= "Python is awesome!" 
 counts = {}            
@@ -32,7 +33,7 @@ for c in counts:
     print(c, "appears", counts[c],"times")
 ```
 
-Returning certain characters from a string is also really easy to do in Python.  
+Returning specific characters from a string is also simple to do in Python.  
 ```{python}
 import re
 
@@ -42,8 +43,8 @@ re.findall(r"[0-9]+",string1)
 ```
 
 Finally, there are ways to solve real world, computation biology problems with Python. For example, if someone wanted to see how many times a certain genomic sequence will be cut by a certain restriction enzyme, they can use Python to figure it out. Here is an illustration:
-If a restriction enzyme cut at ANTAAT and GCRWTG, we can see how many cuts there would be of a given nucleotide sequence 
 
+If a restriction enzyme cut at ANTAAT and GCRWTG, we can see how many cuts there would be of a given nucleotide sequence 
 ```{python}
 sequence="ATGGCAATAACCCCCCGTTTCTACTTCTAGAGGAGAAAAGTATTGACATGAGCGCTCCCGGCACAAGGGCCAAAGAAGTCTCCAATTTCTTATTTCCGAATGACATGCGTCTCCTTGCGGGTAAATCACCGACCGCAATTCATAGAAGCCTGGGGGAACAGATAGGTCTAATTAGCTTAAGAGAGTAAATCCTGGGATCATTCAGTAGTAACCATAAACTTACGCTGGGGCTTCTTCGGCGGATTTTTACAGTTACCAACCAGGAGATTTGAAGTAAATCAGTTGAGGATTTAGCCGCGCTATCCGGTAATCTCCAAATTAAAACATACCGTTCCATGAAGGCTAGAATTACTTACCGGCCTTTTCCATGCCTGCGCTATACCCCCCCACTCTCCCGCTTATCCGTCCGAGCGGAGGCAGTGCGATCCTCCGTTAAGATATTCTTACGTGTGACGTAGCTATGTATTTTGCAGAGCTGGCGAACGCGTTGAACACTTCACAGATGGTAGGGATTCGGGTAAAGGGCGTATAATTGGGGACTAACATAGGCGTAGACTACGATGGCGCCAACTCAATCGCAGCTCGAGCGCCCTGAATAACGTACTCATCTCAACT"
 
@@ -51,5 +52,6 @@ re.findall(r"A.TAAT|GC[A|G][A|T]TG",sequence)
 ```
 In this entire sequence, there will be 1 cut producing 2 fragments of DNA.
 
+These are just a few examples of how Python is an intuitive language that is a good starting point for people who wish to code. I am excited to continue in my journey of learning all the things that Python makes possible! 
 
 ![](/blog/2019-12-11-my-blogpost_files/download.png)
