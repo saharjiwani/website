@@ -29,7 +29,7 @@ theme = "hugo-sustain"
   name = "resume"
   identifier = "resume"
   weight = 300
-  url = "Resume.pdf"
+  url = "/Resume.pdf/"
 [[menu.main]]
   name = "blog"
   weight = 100
